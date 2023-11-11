@@ -8,21 +8,22 @@ package database
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 const createTask = `-- name: CreateTask :one
-INSERT INTO tasks (id, status,type,expiry_date,created_at, updated_at)
-VALUES($1, $2, $3, $4, $5, $6)
+INSERT INTO tasks (id, status, type, expiry_date, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id, status, type, expiry_date, created_at, updated_at
 `
 
 type CreateTaskParams struct {
 	ID         uuid.UUID
-	Status     sql.NullString
-	Type       sql.NullString
-	ExpiryDate sql.NullTime
+	Status     string
+	Type       string
+	ExpiryDate time.Time
 	CreatedAt  sql.NullTime
 	UpdatedAt  sql.NullTime
 }
@@ -46,4 +47,39 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const findValidJob = `-- name: FindValidJob :many
+SELECT id, status, type, expiry_date, created_at, updated_at FROM tasks
+WHERE expiry_date > CURRENT_DATE AND status = 'ongoing'
+`
+
+func (q *Queries) FindValidJob(ctx context.Context) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, findValidJob)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.Status,
+			&i.Type,
+			&i.ExpiryDate,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

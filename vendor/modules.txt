@@ -15,3 +15,6 @@ github.com/joho/godotenv
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# github.com/robfig/cron v1.2.0
+## explicit
+github.com/robfig/cron

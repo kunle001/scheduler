@@ -14,9 +14,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// type apiConfig struct{
-// 	DB *database.Queries
-// }
+type apiConfig struct{
+	DB *database.Queries
+}
 
 func main() {
 	godotenv.Load(".env")
@@ -32,7 +32,6 @@ func main() {
 	};
 
 	// connecting to DB
-	println(dbUrl)
 	conn, err := sql.Open("postgres", dbUrl)
 
 	if err != nil{
@@ -40,10 +39,10 @@ func main() {
 	}
 
 	// DataBase
-	database.New(conn)
-	// apiCfg := apiConfig{
-	// 	DB: db,
-	// };
+	db := database.New(conn)
+	apiCfg := apiConfig{
+		DB: db,
+	};
 
 	
 	router := chi.NewRouter()
@@ -61,8 +60,8 @@ func main() {
 	// api version 1 router, mounting it on the ain router
 	v1Router := chi.NewRouter()
 
-	v1Router.Get("/healthz", handleReadiness)
-	// v1Router.Get("/happy", handlers.Handler1)
+	v1Router.Get("/healthz", HandleReadiness)
+	v1Router.Post("/create-task", apiCfg.CreateTask)
 
 	router.Mount("/api/v1",v1Router)
 

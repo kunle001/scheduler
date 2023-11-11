@@ -6,15 +6,16 @@ package database
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 type Task struct {
 	ID         uuid.UUID
-	Status     sql.NullString
-	Type       sql.NullString
-	ExpiryDate sql.NullTime
+	Status     string
+	Type       string
+	ExpiryDate time.Time
 	CreatedAt  sql.NullTime
 	UpdatedAt  sql.NullTime
 }
