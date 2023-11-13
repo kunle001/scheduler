@@ -6,16 +6,45 @@ import (
 	"net/http"
 	"os"
 
+	"net"
+
 	"dev.azure.com/wole0010243/scheduler/_git/scheduler/internal/database"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 
 	_ "github.com/lib/pq"
+
+	pb "dev.azure.com/wole0010243/scheduler/_git/scheduler/proto"
+	"google.golang.org/grpc"
 )
 
 type apiConfig struct{
 	DB *database.Queries
+}
+
+const (
+	port = ":8000"
+)
+
+type helloServer struct{
+	pb.ScheduleServiceServer
+}
+
+func connectGrpc(){
+	lis, err:= net.Listen("tcp", port)
+
+	if err!=nil{
+		log.Fatal("Failed to start the server", err)
+	}
+	
+	grpcServer := grpc.NewServer()
+	pb.RegisterScheduleServiceServer(grpcServer, &helloServer{})
+	log.Printf("server started at %v", lis.Addr())
+
+	if err:= grpcServer.Serve(lis); err !=nil{
+		log.Fatalf("failed to start grpc: %v", err)
+	} 
 }
 
 func main() {
@@ -70,6 +99,8 @@ func main() {
 		Addr: ":" + port,
 	}
 
+	
+	go connectGrpc()
 
 	log.Printf("Sever starting on port %v", port)
 	err = srv.ListenAndServe();
@@ -77,6 +108,7 @@ func main() {
 	if err != nil{
 		log.Fatal(err)
 	}
+
 
 	
 }

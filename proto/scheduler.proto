@@ -1,0 +1,26 @@
+syntax="proto3";
+
+option go_package= "./proto";
+
+package schedule_service;
+
+service ScheduleService{
+  rpc CreateSchedule(CreateScheduleRequest) returns (CreateScheduleResponse){};
+}
+
+
+message CreateScheduleRequest{
+  string type=1;
+  string expiry_date=2;
+}
+
+message CreateScheduleResponse{
+  string id=1;
+  string expiry_date=2;
+  string type=3;
+  string status =4;
+  string created_at=5;
+  string updated_at=6;
+}
+
+// protoc --go_out=. --go-grpc_out=. proto/greet.proto
