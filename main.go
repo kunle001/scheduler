@@ -29,6 +29,7 @@ const (
 
 type helloServer struct{
 	pb.ScheduleServiceServer
+	grpcDB *apiConfig
 }
 
 func connectGrpc(){
@@ -40,7 +41,7 @@ func connectGrpc(){
 	
 	grpcServer := grpc.NewServer()
 	pb.RegisterScheduleServiceServer(grpcServer, &helloServer{})
-	log.Printf("server started at %v", lis.Addr())
+	log.Printf("Grpc server started at %v", lis.Addr())
 
 	if err:= grpcServer.Serve(lis); err !=nil{
 		log.Fatalf("failed to start grpc: %v", err)
@@ -73,7 +74,7 @@ func main() {
 		DB: db,
 	};
 
-	
+	apiCfg.startJob()
 	router := chi.NewRouter()
 	
 	// Allowing cross-origin connection

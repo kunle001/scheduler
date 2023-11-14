@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ScheduleServiceClient interface {
 	CreateSchedule(ctx context.Context, in *CreateScheduleRequest, opts ...grpc.CallOption) (*CreateScheduleResponse, error)
+	SendError(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*SendErrorResponse, error)
 }
 
 type scheduleServiceClient struct {
@@ -42,11 +43,21 @@ func (c *scheduleServiceClient) CreateSchedule(ctx context.Context, in *CreateSc
 	return out, nil
 }
 
+func (c *scheduleServiceClient) SendError(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*SendErrorResponse, error) {
+	out := new(SendErrorResponse)
+	err := c.cc.Invoke(ctx, "/schedule_service.ScheduleService/SendError", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ScheduleServiceServer is the server API for ScheduleService service.
 // All implementations must embed UnimplementedScheduleServiceServer
 // for forward compatibility
 type ScheduleServiceServer interface {
 	CreateSchedule(context.Context, *CreateScheduleRequest) (*CreateScheduleResponse, error)
+	SendError(context.Context, *NoParam) (*SendErrorResponse, error)
 	mustEmbedUnimplementedScheduleServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedScheduleServiceServer struct {
 
 func (UnimplementedScheduleServiceServer) CreateSchedule(context.Context, *CreateScheduleRequest) (*CreateScheduleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSchedule not implemented")
+}
+func (UnimplementedScheduleServiceServer) SendError(context.Context, *NoParam) (*SendErrorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendError not implemented")
 }
 func (UnimplementedScheduleServiceServer) mustEmbedUnimplementedScheduleServiceServer() {}
 
@@ -88,6 +102,24 @@ func _ScheduleService_CreateSchedule_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ScheduleService_SendError_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoParam)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ScheduleServiceServer).SendError(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/schedule_service.ScheduleService/SendError",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ScheduleServiceServer).SendError(ctx, req.(*NoParam))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ScheduleService_ServiceDesc is the grpc.ServiceDesc for ScheduleService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var ScheduleService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateSchedule",
 			Handler:    _ScheduleService_CreateSchedule_Handler,
+		},
+		{
+			MethodName: "SendError",
+			Handler:    _ScheduleService_SendError_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

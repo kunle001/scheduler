@@ -6,6 +6,7 @@ package schedule_service;
 
 service ScheduleService{
   rpc CreateSchedule(CreateScheduleRequest) returns (CreateScheduleResponse){};
+  rpc SendError(NoParam) returns (SendErrorResponse){}
 }
 
 
@@ -22,5 +23,13 @@ message CreateScheduleResponse{
   string created_at=5;
   string updated_at=6;
 }
+
+message SendErrorResponse{
+  string error=1;
+}
+
+message NoParam{}
+
+
 
 // protoc --go_out=. --go-grpc_out=. proto/greet.proto
