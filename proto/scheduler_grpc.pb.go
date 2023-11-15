@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ScheduleServiceClient interface {
 	CreateSchedule(ctx context.Context, in *CreateScheduleRequest, opts ...grpc.CallOption) (*CreateScheduleResponse, error)
-	SendError(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*SendErrorResponse, error)
+	CreateTransactionJob(ctx context.Context, in *CreateTransactionJobRequest, opts ...grpc.CallOption) (*CreateTransactionJobResponse, error)
 }
 
 type scheduleServiceClient struct {
@@ -43,9 +43,9 @@ func (c *scheduleServiceClient) CreateSchedule(ctx context.Context, in *CreateSc
 	return out, nil
 }
 
-func (c *scheduleServiceClient) SendError(ctx context.Context, in *NoParam, opts ...grpc.CallOption) (*SendErrorResponse, error) {
-	out := new(SendErrorResponse)
-	err := c.cc.Invoke(ctx, "/schedule_service.ScheduleService/SendError", in, out, opts...)
+func (c *scheduleServiceClient) CreateTransactionJob(ctx context.Context, in *CreateTransactionJobRequest, opts ...grpc.CallOption) (*CreateTransactionJobResponse, error) {
+	out := new(CreateTransactionJobResponse)
+	err := c.cc.Invoke(ctx, "/schedule_service.ScheduleService/CreateTransactionJob", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *scheduleServiceClient) SendError(ctx context.Context, in *NoParam, opts
 // for forward compatibility
 type ScheduleServiceServer interface {
 	CreateSchedule(context.Context, *CreateScheduleRequest) (*CreateScheduleResponse, error)
-	SendError(context.Context, *NoParam) (*SendErrorResponse, error)
+	CreateTransactionJob(context.Context, *CreateTransactionJobRequest) (*CreateTransactionJobResponse, error)
 	mustEmbedUnimplementedScheduleServiceServer()
 }
 
@@ -68,8 +68,8 @@ type UnimplementedScheduleServiceServer struct {
 func (UnimplementedScheduleServiceServer) CreateSchedule(context.Context, *CreateScheduleRequest) (*CreateScheduleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSchedule not implemented")
 }
-func (UnimplementedScheduleServiceServer) SendError(context.Context, *NoParam) (*SendErrorResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendError not implemented")
+func (UnimplementedScheduleServiceServer) CreateTransactionJob(context.Context, *CreateTransactionJobRequest) (*CreateTransactionJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTransactionJob not implemented")
 }
 func (UnimplementedScheduleServiceServer) mustEmbedUnimplementedScheduleServiceServer() {}
 
@@ -102,20 +102,20 @@ func _ScheduleService_CreateSchedule_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ScheduleService_SendError_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NoParam)
+func _ScheduleService_CreateTransactionJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTransactionJobRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ScheduleServiceServer).SendError(ctx, in)
+		return srv.(ScheduleServiceServer).CreateTransactionJob(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/schedule_service.ScheduleService/SendError",
+		FullMethod: "/schedule_service.ScheduleService/CreateTransactionJob",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ScheduleServiceServer).SendError(ctx, req.(*NoParam))
+		return srv.(ScheduleServiceServer).CreateTransactionJob(ctx, req.(*CreateTransactionJobRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -132,8 +132,8 @@ var ScheduleService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ScheduleService_CreateSchedule_Handler,
 		},
 		{
-			MethodName: "SendError",
-			Handler:    _ScheduleService_SendError_Handler,
+			MethodName: "CreateTransactionJob",
+			Handler:    _ScheduleService_CreateTransactionJob_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

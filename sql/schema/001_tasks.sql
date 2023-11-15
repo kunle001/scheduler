@@ -4,8 +4,8 @@ CREATE TABLE tasks (
   status TEXT NOT NULL CHECK (status IN ('ongoing', 'completed')),
   type TEXT NOT NULL CHECK (type IN ('bill', 'transfer', 'airtime', 'data')),
   expiry_date TIMESTAMP NOT NULL,
-  amount INTEGER NOT NULL
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  amount INTEGER NOT NULL,
+  created_at TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

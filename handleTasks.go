@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -72,5 +73,51 @@ func (s * helloServer) CreateSchedule (ctx context.Context, req *pb.CreateSchedu
 			Id: task.ID.String(),
 			Status: task.Status,
 		}, nil
+}
+
+
+func (s*helloServer) CreateTransactionJob (ctx context.Context, req *pb.CreateTransactionJobRequest)(*pb.CreateTransactionJobResponse, error){
+	Amount:= req.Amount
+	BeneficiaryAccountName:=req.BeneficiaryAccountName
+	BeneficiaryAccountNumber :=  req.BeneficiaryAccountNumber
+	Narration :=req.Naration
+	DestinationInstitutionName := req.DestinationInstitutionName
+	DestinationInstitutionCode := req.DestinationInstitutionCode
+	OriginatorAccountNumber := req.OriginatorAccountNumber
+	CustomerAcccountName := req.CustomerAcccountName
+
+
+
+	EndDate,err := time.Parse("2006-01-02", req.EndDate)
+	
+	if err !=nil{
+		return nil, fmt.Errorf("unable to parse expiry date it should be in the format YYYYMMDD: %v", err)
+	}
+
+	data, err := s.grpcDB.DB.CreateTransactionJob(ctx, database.CreateTransactionJobParams{
+		ID: uuid.New(),
+		Amount:Amount,
+		BeneficiaryAccountName: BeneficiaryAccountName,
+		BeneficiaryAccountNumber: BeneficiaryAccountNumber,
+		Narration: Narration,
+		DestinationInstitutionName: DestinationInstitutionName,
+		DestinationInstitutionCode: DestinationInstitutionCode,
+		CustomerAccountName: CustomerAcccountName,
+		EndDate: EndDate,
+		Status: "ongoing",
+		OriginatorAccountNumber: OriginatorAccountNumber,
+		CreatedAt: time.Now(),
+	})
+
+	if err != nil{
+		log.Printf("error creating job because %v", err)
+	}
+	
+	log.Printf("job successfully created %v", data)
+	
+	return &pb.CreateTransactionJobResponse{
+		Success: true,
+	}, nil
+
 }
 

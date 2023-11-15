@@ -109,7 +109,4 @@ func main() {
 	if err != nil{
 		log.Fatal(err)
 	}
-
-
-	
 }

@@ -5,4 +5,5 @@ RETURNING *;
 
 -- name: FindValidJob :many
 SELECT * FROM tasks
-WHERE expiry_date > CURRENT_DATE AND status = 'ongoing';
+WHERE expiry_date > CURRENT_DATE AND status = 'ongoing'
+ORDER BY expiry_date ASC;

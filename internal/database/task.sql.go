@@ -16,7 +16,7 @@ import (
 const createTask = `-- name: CreateTask :one
 INSERT INTO tasks (id, status, type, expiry_date, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, status, type, expiry_date, created_at, updated_at
+RETURNING id, status, type, expiry_date, amount, created_at, updated_at
 `
 
 type CreateTaskParams struct {
@@ -43,6 +43,7 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 		&i.Status,
 		&i.Type,
 		&i.ExpiryDate,
+		&i.Amount,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -50,8 +51,9 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 }
 
 const findValidJob = `-- name: FindValidJob :many
-SELECT id, status, type, expiry_date, created_at, updated_at FROM tasks
+SELECT id, status, type, expiry_date, amount, created_at, updated_at FROM tasks
 WHERE expiry_date > CURRENT_DATE AND status = 'ongoing'
+ORDER BY expiry_date ASC
 `
 
 func (q *Queries) FindValidJob(ctx context.Context) ([]Task, error) {
@@ -68,6 +70,7 @@ func (q *Queries) FindValidJob(ctx context.Context) ([]Task, error) {
 			&i.Status,
 			&i.Type,
 			&i.ExpiryDate,
+			&i.Amount,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
