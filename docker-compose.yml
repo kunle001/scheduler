@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  scheduler:
+    image: kkunle/cbascheduler:latest
+    environment:
+      PORT: 8080
+      DB_URL: postgresql://postgres:kunle1374@localhost:5432/nvaultscheduler?sslmode=disable
+
+
+  # PostgreSQL image
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: nvaultscheduler
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: kunle1374

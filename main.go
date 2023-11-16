@@ -24,7 +24,7 @@ type apiConfig struct{
 }
 
 const (
-	port = ":8000"
+	port = ":8080"
 )
 
 type helloServer struct{
